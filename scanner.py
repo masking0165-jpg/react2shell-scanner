@@ -323,6 +323,11 @@ def check_vulnerability(host: str, timeout: int = 10, verify_ssl: bool = True, f
     response, error = send_payload(root_url, headers, body, timeout, verify_ssl)
 
     if error:
+        # In RCE mode, timeouts indicate not vulnerable (patched servers hang)
+        if not safe_check and error == "Request timed out":
+            result["vulnerable"] = False
+            result["error"] = error
+            return result
         result["error"] = error
         return result
 
@@ -409,7 +414,11 @@ def print_result(result: dict, verbose: bool = False):
             print(f"  -> Redirected to: {final_url}")
     elif result["vulnerable"] is False:
         status = colorize("[NOT VULNERABLE]", Colors.GREEN)
-        print(f"{status} {host} - Status: {result['status_code']}")
+        if result.get('status_code') is not None:
+            print(f"{status} {host} - Status: {result['status_code']}")
+        else:
+            error_msg = result.get("error", "")
+            print(f"{status} {host}" + (f" - {error_msg}" if error_msg else ""))
         if redirected and verbose:
             print(f"  -> Redirected to: {final_url}")
     else:
