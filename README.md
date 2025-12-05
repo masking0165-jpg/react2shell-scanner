@@ -18,6 +18,10 @@ The `--safe-check` flag uses an alternative detection method that relies on side
 
 The `--waf-bypass` flag prepends random junk data to the multipart request body. This can help evade WAF content inspection that only analyzes the first portion of request bodies. The default size is 128KB, configurable via `--waf-bypass-size`. When WAF bypass is enabled, the timeout is automatically increased to 20 seconds (unless explicitly set).
 
+### Vercel WAF Bypass
+
+The `--vercel-waf-bypass` flag uses an alternative payload variant specifically designed to bypass Vercel WAF protections. This uses a different multipart structure with an additional form field.
+
 ### Windows Mode
 
 The `--windows` flag switches the payload from Unix shell (`echo $((41*271))`) to PowerShell (`powershell -c "41*271"`) for targets running on Windows.
